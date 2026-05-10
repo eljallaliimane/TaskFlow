@@ -1,0 +1,205 @@
+openapi: 3.0.0
+info:
+  title: TaskFlow API
+  description: API REST pour la gestion collaborative de projets et tâches avec notifications.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api
+    description: Serveur local de développement
+
+paths:
+  /users/register:
+    post:
+      summary: Inscription d'un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+
+  /users/login:
+    post:
+      summary: Connexion d'un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion réussie
+
+  /projects:
+    post:
+      summary: Créer un projet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Projet créé
+
+  /projects/{id}:
+    get:
+      summary: Récupérer un projet par ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Projet trouvé
+    delete:
+      summary: Supprimer un projet par ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Projet supprimé
+
+  /tasks:
+    post:
+      summary: Créer une tâche
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                dueDate:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Tâche créée
+
+  /tasks/{id}:
+    put:
+      summary: Modifier une tâche
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [TODO, IN_PROGRESS, DONE]
+      responses:
+        '200':
+          description: Tâche mise à jour
+    delete:
+      summary: Supprimer une tâche
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Tâche supprimée
+
+  /tasks/{id}/assign:
+    put:
+      summary: Assigner une tâche à un utilisateur
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assigneeId:
+                  type: integer
+      responses:
+        '200':
+          description: Tâche assignée
+
+  /tasks/{id}/status:
+    put:
+      summary: Modifier le statut d'une tâche
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [TODO, IN_PROGRESS, DONE]
+      responses:
+        '200':
+          description: Statut mis à jour
+
+  /notifications:
+    get:
+      summary: Récupérer les notifications d’un utilisateur
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des notifications
